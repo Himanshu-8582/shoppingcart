@@ -3,7 +3,7 @@ import Cart from "../models/cart.models.js";
 export const addToCart = async (req, res) => {
     try {
         const { itemId } = req.body;
-        const userId = req.user._id; 
+        const userId = req.userId;; 
         let cart = await Cart.findOne({ userId });
         if (!cart) {
             // Create new cart if none exists
@@ -16,6 +16,7 @@ export const addToCart = async (req, res) => {
             const existingItem = cart.items.find((i) => i.itemId.toString() === itemId);
 
             if (existingItem) existingItem.quantity += 1; // increase quantity else cart.items.push({ itemId, quantity: 1 });
+            else cart.items.push({ itemId, quantity: 1 });
             await cart.save();
         }
 
@@ -30,7 +31,8 @@ export const addToCart = async (req, res) => {
 
 export const listCarts = async (req, res) => {
     try {
-        const cart = await Cart.findOne({ userId: req.user._id })
+        // console.log("Middleware userId:", req.userId);
+        const cart = await Cart.findOne({ userId: req.userId })
             .populate("items.itemId", "name price");
         if (!cart) {
             return res.json({ message: "Cart is empty", items: [] });

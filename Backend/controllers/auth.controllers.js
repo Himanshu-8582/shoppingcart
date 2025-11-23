@@ -24,7 +24,7 @@ export const signUp = async (req, res) => {
             password: hashPassword,
         });
 
-        const token = await genToken(user._id);    // Generate JWT token for the new user
+        const token = genToken(user._id);    // Generate JWT token for the new user
         res.cookie("token", token, { 
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -56,14 +56,17 @@ export const Login = async (req, res) => {
             return res.status(400).json({ message: "Invalid password" });
         }
 
-        const token = await genToken(user._id);    // Generate JWT token for the new user
+        const token = genToken(user._id);    // Generate JWT token for the new user
+        // console.log("Generated Token =>", token);
+
         res.cookie("token", token, { 
-            httpOnly: true,
+            httpOnly: false,
             maxAge: 7 * 24 * 60 * 60 * 1000,
-            sameSite: "strict",
+            sameSite: "lax",
             secure:false                           // in production, set secure to true because we use https
         })                                         // we store the token in an HTTP-only cookie that expires in 7 days. so we can use this token to authenticate the user in subsequent requests.
         res.status(200).json({ user });
+        // res.status(200).json({ user, token });
     } catch (error) {
         return res.status(500).json({ message: `Login error: ${error}` });
     }

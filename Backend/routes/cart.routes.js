@@ -5,6 +5,6 @@ import isAuth from "../middlewares/isAuth.js";
 const cartRouter = Router();
 
 cartRouter.post("/add", isAuth, addToCart);
-cartRouter.get("/list", listCarts);
+cartRouter.get("/list", isAuth, listCarts);
 
 export default cartRouter;
